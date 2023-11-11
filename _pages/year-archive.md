@@ -1,6 +1,5 @@
 ---
-title: "Posts by Year"
-permalink: /posts/
+title: "Knowledge Articles"
+permalink: /articles/
 layout: posts
-author_profile: true
 ---
