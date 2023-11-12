@@ -88,7 +88,6 @@ author_profile: false
     }
 
     .collapsible-alert-box {
-      display: none;
       padding: 10px;
       background-color: #F2F3F3; /* grey color */
       border-radius: 3px; /* Rounded corners */
@@ -99,14 +98,14 @@ author_profile: false
     <div id="left-section">
       <div id="result">Result: <span id="resultValue"></span></div>
       <canvas id="graphCanvas" width="500" height="500"></canvas>
-      <div id="interactions">
+      <div id="interactions" class="collapsible-alert-box">
         Possible Drug Interactions: <span id="calculatedInteractions"></span>
       </div>
     </div>
     <div id="right-section">
       <label for="gender">Gender:</label>
-      <input type="radio" id="male" name="gender" oninput="updateGraph()" checked> Male&nbsp;&nbsp;
-      <input type="radio" id="female" name="gender" oninput="updateGraph()"> Female
+      <input type="radio" id="male" name="gender" oninput="updateGraph()" oninput="updateGraph()" checked> Male&nbsp;&nbsp;
+      <input type="radio" id="female" name="gender" oninput="updateGraph()" oninput="updateGraph()"> Female
       
       <label for="age">Age:</label>
       <input type="number" id="age" step="1" placeholder="Enter patient's age" oninput="updateGraph()">
@@ -118,18 +117,25 @@ author_profile: false
       <input type="number" id="weigth" step="0.1" placeholder="Enter patient's weigth in kg" oninput="updateGraph()">
 
       <div id="bmi">Body Mass Index: <span id="calculatedBmi"></span></div>
+      <br>
+
+      <label for="ldlChol">LDL Cholesterol:</label>
+        <input type="number" id="ldlChol" step="0.1" placeholder="Enter patient's LDL cholesterol in mmol/L" oninput="updateGraph()">
 
       <button class="collapsible-btn collapsed" onclick="toggleCollapsible()"> &nbsp; </button>
 
       <!-- Collapsible content -->
       <div class="collapsible-content" id="collapsibleContent">
-        <input type="checkbox" id="prevEvents"> Previous Acute Coronary Events
+        <input type="checkbox" id="prevEvents" onclick="updateGraph()"> Previous Acute Coronary Events
         <br>
 
-        <input type="checkbox" id="familyHistory"> Family History of CVD
+        <input type="checkbox" id="familyHistory" onclick="updateGraph()"> Family History of CVD
         <br>
 
-        <input type="checkbox" id="smoking"> Smoking
+        <input type="checkbox" id="smoking" onclick="updateGraph()"> Smoking
+        <br>
+
+        <input type="checkbox" id="activity" onclick="updateGraph()"> Physical Activity
         <br>
         <br>
 
@@ -137,28 +143,25 @@ author_profile: false
         <label for="totalChol">Total Cholesterol:</label>
         <input type="number" id="totalChol" step="0.1" placeholder="Enter patient's total cholesterol in mmol/L" oninput="updateGraph()">
 
-        <label for="ldlChol">LDL Cholesterol:</label>
-        <input type="number" id="ldlChol" step="0.1" placeholder="Enter patient's LDL cholesterol in mmol/L" oninput="updateGraph()">
-
         <label for="bloodPressure">Blood Pressure:</label>
-        <input type="number" id="bloodPressure" step="0.1" placeholder="Enter patient's blood pressure in mmHg" oninput="updateGraph()">
+        <input type="text" id="bloodPressure" placeholder="Enter patient's blood pressure in mmHg/mmHg" oninput="updateGraph()">
 
         <label for="liverAlt">Liver ALT and AST:</label>
-        <input type="number" id="liverAlt" step="0.1" placeholder="Enter patient's liver ALT in IU/L" oninput="updateGraph()"><input type="number" id="liverAlt" step="0.1" placeholder="Enter patient's liver AST in IU/L" oninput="updateGraph()">
+        <input type="number" id="liverAlt" step="0.1" placeholder="Enter patient's liver ALT in IU/L" oninput="updateGraph()"><input type="number" id="liverAst" step="0.1" placeholder="Enter patient's liver AST in IU/L" oninput="updateGraph()">
         <br>
         <br>
 
         Comorbidities:
         <br>
 
-        <input type="checkbox" id="artherialHypertension"> Artherial Hypertension
+        <input type="checkbox" id="artherialHypertension" onclick="updateGraph()"> Artherial Hypertension
         <br>
 
         <input type="checkbox" id="diabetesMellitus" onclick="toggleCollapsibleDiabetes()"> Diabetes Mellitus
         <br>
         <div class="collapsible-content" id="collapsibleContentDiabetes">
           <div id="left-section-mod">
-          <label for="hba1c"> Blood Pressure:</label>
+          <label for="hba1c"> HbA1c:</label>
           <input type="number" id="hba1c" step="0.1" placeholder="Enter patient's HbA1c in %" oninput="updateGraph()">
           </div>
         </div>
@@ -193,24 +196,73 @@ author_profile: false
 
   <script>
     function updateGraph() {
+      var dose = 6.8
+
       const isMale = document.getElementById('male').checked;
       const age = document.getElementById('age').value;
       const height = document.getElementById('height').value;
       const weigth = document.getElementById('weigth').value;
       const calculatedBmi = weigth / height / height * 10000;
-      document.getElementById('calculatedBmi').innerText = calculatedBmi.toFixed(2);
+      document.getElementById('calculatedBmi').innerText = height && weigth ? calculatedBmi.toFixed(2) : "";
+
+      const isPrevEvents = document.getElementById('prevEvents').checked;
+      const isFamilyHistory = document.getElementById('familyHistory').checked;
+      const isSmoking = document.getElementById('smoking').checked;
+      const isPhysicallyActive = document.getElementById('activity').checked;
+
+      if (isPrevEvents)
+        {dose += 40}
+
+      if (isFamilyHistory)
+        {dose += 10}
+
+      if (isSmoking)
+        {dose *= 1.2}
+
+      if (isPhysicallyActive)
+        {dose *= 0.9}
+
+      dose *= Math.max(1, (age-30)/15);
+
+      const bmiCoef = height && weigth ? Math.max(1, (calculatedBmi - 25) / 8) : 1
+      dose *= bmiCoef
+
+      const totalChol = document.getElementById('totalChol').value;
+      const ldlChol = document.getElementById('ldlChol').value;
+      const bloodPressure = document.getElementById('bloodPressure').value;
+      const liverAlt = document.getElementById('liverAlt').value;
+      const liverAst = document.getElementById('liverAst').value;
+
+      dose *= Math.max(1, (Math.log10(liverAlt) + Math.log10(liverAst))/3)
+
+      dose *= Math.max(0, (ldlChol-0.6))
+
+      const isAatherialHypertension = document.getElementById('artherialHypertension').checked;
+      const isDiabetesMellitus = document.getElementById('diabetesMellitus').checked;
+      const hbA1c = document.getElementById('hba1c').value;
+
+      const isKidneyDisease = document.getElementById('kidneyDisease').checked;
       const creatinine = document.getElementById('creatinine').value;
       const genderCoef = isMale ? 1 : 0.85;
       const calculatedCreatinineClearance = ((140 - age) * weigth / creatinine / 814.464) * genderCoef;
       document.getElementById('calculatedCreatinineClearance').innerText = calculatedCreatinineClearance.toFixed(2);
 
+
+      const atorva = Math.min(80, dose > 80 ? dose - 70 : dose)
+      const ezetimib = dose > 80 ? 10 : 0
+
+      const prescription = "\n"
+        + atorva.toFixed(2) + " mg Atorvastatin\n"
+        + (ezetimib > 0 ? ezetimib + " mg Ezetimib" : "")
+      document.getElementById('resultValue').innerText = (ldlChol && ldlChol > 1.4)? prescription : "\nNo treatment needed";
+
       const med1 = document.getElementById('medValue1').value
       const atorList = ['Fenofibrate', 'Mavacamten', 'Nefazodone', 'Diltiazem', 'Ciprofibrate', 'Eryhtromycin', 'Clarithromycin', 'Clofibrate', 'Digoxin', 'Verapamil'];
       if (atorList.includes(med1)) {
-        calculatedInteractions = "(Atorvastatin, " + med1 + ")"
+        calculatedInteractions = "\n(Atorvastatin, " + med1 + ")"
       }
       else {
-        calculatedInteractions = "Not present"
+        calculatedInteractions = "\nNot present"
       }
       document.getElementById('calculatedInteractions').innerText = calculatedInteractions;
 
@@ -230,7 +282,6 @@ author_profile: false
 
       for (let x = 0; x <= 1; x += 0.01) {
         const y = Math.pow(baseValue, powerValue) * Math.pow(x, powerValue);
-        document.getElementById('resultValue').innerText = y.toFixed(2);
         ctx.lineTo(scaleX(x), scaleY(y));
       }
 
