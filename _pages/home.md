@@ -9,28 +9,27 @@ header:
     - label: "<i class='fas fa-download'></i> Install now"
       url: "/docs/quick-start-guide/"
 excerpt: >
-  A flexible two-column Jekyll theme. Perfect for building personal sites, blogs, and portfolios.<br />
-  <small><a href="https://github.com/mmistakes/minimal-mistakes/releases/tag/4.24.0">Latest release v4.24.0</a></small>
+  Pioneers personalized cardiovascular health management 
 feature_row:
-  - image_path: /assets/images/mm-customizable-feature.png
-    alt: "customizable"
-    title: "Super customizable"
-    excerpt: "Everything from the menus, sidebars, comments, and more can be configured or set with YAML Front Matter."
-    url: "/docs/configuration/"
+  - image_path: /assets/images/logo-background.png
+    alt: "why CorAid"
+    title: "Why CorAid?"
+    excerpt: "Our team addresses the critical issue of dyslipidemia: this is an illness that impacts millions of people globally."
+    url: "/about/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: /assets/images/mm-responsive-feature.png
-    alt: "fully responsive"
-    title: "Responsive layouts"
-    excerpt: "Built with HTML5 + CSS3. All layouts are fully responsive with helpers to augment your content."
-    url: "/docs/layouts/"
+  - image_path: /assets/images/our-aim.png
+    alt: "our aim"
+    title: "Our Aim"
+    excerpt: "CorAid leverages artificial intelligence and patient data to recommend optimal cholesterol-lowering medications and doses derived for individual patients. It is a seamless integration into existing healthcare systems, ensuring precisely quantised treatment with minimal disruption of doctors‘ worklflow. "
+    url: "/about/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
   - image_path: /assets/images/mm-free-feature.png
-    alt: "100% free"
-    title: "100% free"
-    excerpt: "Free to use however you want under the MIT License. Clone it, fork it, customize it... whatever!"
-    url: "/docs/license/"
+    alt: "our team"
+    title: "Our Team"
+    excerpt: "Our innovative team is dedicated to enhancing healthcare practices! We are a dynamic group of five individuals, each bringing unique expertise from diverse fields, united by a common goal."
+    url: "/about/"
     btn_class: "btn--primary"
     btn_label: "Learn more"      
 ---
