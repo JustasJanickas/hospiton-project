@@ -5,3 +5,5 @@ main:
     url: /calculator/
   - title: "About"
     url: /about/
+  - title: "Contacts"
+    url: /contacts/

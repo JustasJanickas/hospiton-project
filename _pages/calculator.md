@@ -3,7 +3,267 @@ permalink: /calculator/
 title: "Dosage Calculator"
 author_profile: false
 ---
-<style>
+
+<body>
+  <style>
+    /* body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    } */
+
+    #calculator {
+      display: flex;
+    }
+
+    #left-section {
+      flex: 1;
+      padding: 20px;
+    }
+
+    #right-section {
+      flex: 1;
+      padding: 20px;
+      font-size: 14px;
+    }
+
+    canvas {
+      border: 1px solid #ddd;
+      width: 100%;
+    }
+
+    /* Style for the collapsible content */
+    .collapsible-content {
+      display: none;
+      margin-top: 10px;
+    }
+
+    /* Style for the button */
+    .collapsible-btn {
+      cursor: pointer;
+      padding-top: 10px;
+      border: none;
+      text-align: center;
+      outline: none;
+      width: 100%;
+      position: relative;
+      background-color: #fff
+    }
+    
+    /* Style for the button */
+    .collapsible-btn:focus {
+      outline: none;
+    }
+
+    /* Style for the V and > shapes */
+    .collapsible-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+
+    /* Style for the V shape when collapsed */
+    .collapsible-btn.collapsed::before {
+      border-width: 5px 5px 0 5px;
+      border-color: #000 transparent transparent transparent;
+    }
+
+    /* Style for the > shape when opened */
+    .collapsible-btn.expanded::before {
+      border-width: 5px 5px 5px 5px;
+      border-color: transparent transparent #000 transparent;
+    }
+  </style>
+  <div id="calculator">
+    <div id="left-section">
+      <div id="result">Result: <span id="resultValue"></span></div>
+      <canvas id="graphCanvas" width="500" height="500"></canvas>
+      <div id="interactions">Possible Drug Interactions: </div>
+    </div>
+    <div id="right-section">
+      <label for="gender">Gender:</label>
+      <input type="radio" id="male" name="gender" checked> Male&nbsp;&nbsp;
+      <input type="radio" id="female" name="gender"> Female
+      
+      <label for="age">Age:</label>
+      <input type="number" id="age" step="1" placeholder="Enter patient's age" oninput="updateGraph()">
+
+      <label for="height">Height:</label>
+      <input type="number" id="height" step="0.1" placeholder="Enter patient's height in cm" oninput="updateGraph()">
+      
+      <label for="weigth">Weigth:</label>
+      <input type="number" id="weigth" step="0.1" placeholder="Enter patient's weigth in kg" oninput="updateGraph()">
+
+      <div id="bmi">Body Mass Index: <span id="calculatedBmi"></span></div>
+
+      <button class="collapsible-btn collapsed" onclick="toggleCollapsible()"> &nbsp; </button>
+
+      <!-- Collapsible content -->
+      <div class="collapsible-content" id="collapsibleContent">
+        <input type="checkbox" id="prevEvents"> Previous Acute Coronary Events
+        <br>
+
+        <input type="checkbox" id="familyHistory"> Family History of CVD
+        <br>
+
+        <input type="checkbox" id="smoking"> Smoking
+        <br>
+        <br>
+
+      
+        <label for="totalChol">Total Cholesterol:</label>
+        <input type="number" id="totalChol" step="0.1" placeholder="Enter patient's total cholesterol in mmol/L" oninput="updateGraph()">
+
+        <label for="ldlChol">LDL Cholesterol:</label>
+        <input type="number" id="ldlChol" step="0.1" placeholder="Enter patient's LDL cholesterol in mmol/L" oninput="updateGraph()">
+
+        <label for="bloodPressure">Blood Pressure:</label>
+        <input type="number" id="bloodPressure" step="0.1" placeholder="Enter patient's blood pressure in mmHg" oninput="updateGraph()">
+
+        <label for="liverAlt">Liver ALT and AST:</label>
+        <input type="number" id="liverAlt" step="0.1" placeholder="Enter patient's liver ALT in IU/L" oninput="updateGraph()"><input type="number" id="liverAlt" step="0.1" placeholder="Enter patient's liver AST in IU/L" oninput="updateGraph()">
+        <br>
+        <br>
+
+        Comorbidities:
+        <br>
+
+        <input type="checkbox" id="artherialHypertension"> Artherial Hypertension
+        <br>
+
+        <input type="checkbox" id="diabetesMellitus"> Diabetes Mellitus
+        <div class="collapsible-content" id="collapsibleContent">
+          <label for="hba1c">Blood Pressure:</label>
+          <input type="number" id="hba1c" step="0.1" placeholder="Enter patient's HbA1c in %" oninput="updateGraph()">
+        </div>
+
+        <input type="checkbox" id="kidneyDisease"> Chronic kidney disease
+        <br>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateGraph() {
+      const height = document.getElementById('height').value;
+      const weigth = document.getElementById('weigth').value;
+      const calculatedBmi = weigth / height / height * 10000;
+      document.getElementById('calculatedBmi').innerText = calculatedBmi.toFixed(2);
+
+      const canvas = document.getElementById('graphCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw gridlines and tick labels
+      drawGridlines(ctx, canvas.width, canvas.height);
+
+      // Draw the power function graph
+      ctx.beginPath();
+      ctx.strokeStyle = 'blue';
+      ctx.lineWidth = 2;
+
+      for (let x = 0; x <= 1; x += 0.01) {
+        const y = Math.pow(baseValue, powerValue) * Math.pow(x, powerValue);
+        document.getElementById('resultValue').innerText = y.toFixed(2);
+        ctx.lineTo(scaleX(x), scaleY(y));
+      }
+
+      ctx.stroke();
+
+      // Add legend
+      // ctx.font = "50px serif";
+      ctx.fillStyle = 'blue';
+      ctx.fillText('Graph', canvas.width - 90, 20);
+      ctx.fillStyle = 'gray';
+      ctx.fillText('Gridlines', canvas.width - 90, 45);
+    }
+
+    function drawGridlines(ctx, width, height) {
+      ctx.strokeStyle = 'rgba(200, 200, 200, 0.5)';
+      ctx.lineWidth = 0.5;
+      ctx.fillStyle = 'black';
+      ctx.font = '20px Arial';
+
+      // Horizontal gridlines
+      for (let y = 0; y <= height; y += height / 10) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+
+        // Tick labels
+        const tickLabel = (1 - y / height).toFixed(1);
+        ctx.fillText(tickLabel, 5, y - 5);
+      }
+
+      // Vertical gridlines
+      for (let x = 0; x <= width; x += width / 10) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+
+        // Tick labels
+        const tickLabel = x / width;
+        ctx.fillText(tickLabel.toFixed(1), x + 5, height - 5);
+      }
+    }
+
+    function scaleX(x) {
+      const canvas = document.getElementById('graphCanvas');
+      return x * canvas.width;
+    }
+
+    function scaleY(y) {
+      const canvas = document.getElementById('graphCanvas');
+      return canvas.height - y * canvas.height;
+    }
+
+    function toggleCollapsible() {
+      var content = document.getElementById("collapsibleContent");
+      var button = document.querySelector(".collapsible-btn");
+
+      // Toggle the content's visibility
+      if (content.style.display === "block") {
+        content.style.display = "none";
+        button.classList.remove("active", "expanded");
+        button.classList.add("collapsed");
+      } else {
+        content.style.display = "block";
+        button.classList.add("active", "expanded");
+        button.classList.remove("collapsed");
+      }
+    }
+
+    function toggleCollapsibleDiabetes() {
+      var content = document.getElementById("collapsibleContentDiabetes");
+      var button = document.querySelector(".diabetesMellitus");
+
+      // Toggle the content's visibility
+      if (content.style.display === "block") {
+        content.style.display = "none";
+        button.classList.remove("active", "expanded");
+        button.classList.add("collapsed");
+      } else {
+        content.style.display = "block";
+        button.classList.add("active", "expanded");
+        button.classList.remove("collapsed");
+      }
+    }
+  </script>
+</body>
+
+<!-- <style>
   #calculator-container {
     text-align: center;
     margin: 50px;
@@ -106,4 +366,4 @@ author_profile: false
       currentInput = ''
     }
   }
-</script>
+</script> -->

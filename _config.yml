@@ -59,7 +59,7 @@ plugins:
 author:
   name   : "Trusted Cardiologist"
   avatar : "/assets/images/cardiologist.png"
-  bio    : "Non-existing person that could be the author of listed articles"
+  bio    : "Simulated person that could be the author of listed articles"
   links:
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
