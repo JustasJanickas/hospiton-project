@@ -27,7 +27,7 @@ In Hospiton 2023 we formed Team “CorAid” and set our goal of solving real-wo
 The aim of this project is to create useful and effective internet platform in order to help general practitioners to prescribe individualised dosages of medications to patients who suffer from high cholesterol.
 </p>
 
-<img src="/assets/images/60perc-graph.png" alt="Continuity of taking prescribed medicine">
+<img src="/assets/images/60perc-graph.png" alt="Continuity of taking prescribed medicine"></img>
 
 <p>
 <br>

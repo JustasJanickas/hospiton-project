@@ -252,7 +252,7 @@ author_profile: false
       const ezetimib = dose > 80 ? 10 : 0
 
       const prescription = "\n"
-        + atorva.toFixed(2) + " mg Atorvastatin\n"
+        + atorva.toFixed(0) + " mg Atorvastatin\n"
         + (ezetimib > 0 ? ezetimib + " mg Ezetimib" : "")
       document.getElementById('resultValue').innerText = (ldlChol && ldlChol > 1.4)? prescription : "\nNo treatment needed";
 
@@ -280,8 +280,9 @@ author_profile: false
       ctx.strokeStyle = 'blue';
       ctx.lineWidth = 2;
 
-      for (let x = 0; x <= 1; x += 0.01) {
-        const y = Math.pow(baseValue, powerValue) * Math.pow(x, powerValue);
+      for (let x = 0.25; x <= 0.75; x += 0.05) {
+        const i = (x-0.25)*6;
+        const y = (7/30*i*i - 34/30*i + 3.1)/4;
         ctx.lineTo(scaleX(x), scaleY(y));
       }
 
@@ -309,7 +310,7 @@ author_profile: false
         ctx.stroke();
 
         // Tick labels
-        const tickLabel = (1 - y / height).toFixed(1);
+        const tickLabel = (1 - y / height).toFixed(1)*4;
         ctx.fillText(tickLabel, 5, y - 5);
       }
 
@@ -320,9 +321,15 @@ author_profile: false
         ctx.lineTo(x, height);
         ctx.stroke();
 
+        const months = [
+          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        ];
+
         // Tick labels
-        const tickLabel = x / width;
-        ctx.fillText(tickLabel.toFixed(1), x + 5, height - 5);
+        const tickLabel = months[x/width*10+3];
+        ctx.fillText(tickLabel, x + 5, height - 5);
       }
     }
 
