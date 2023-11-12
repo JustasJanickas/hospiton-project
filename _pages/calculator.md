@@ -30,6 +30,11 @@ author_profile: false
       font-size: 14px;
     }
 
+    #left-section-mod {
+      flex: 1;
+      padding-left: 20px;
+    }
+
     canvas {
       border: 1px solid #ddd;
       width: 100%;
@@ -81,17 +86,27 @@ author_profile: false
       border-width: 5px 5px 5px 5px;
       border-color: transparent transparent #000 transparent;
     }
+
+    .collapsible-alert-box {
+      display: none;
+      padding: 10px;
+      background-color: #F2F3F3; /* grey color */
+      border-radius: 3px; /* Rounded corners */
+      margin: 10px 0; /* Margin for spacing */
+    }
   </style>
   <div id="calculator">
     <div id="left-section">
       <div id="result">Result: <span id="resultValue"></span></div>
       <canvas id="graphCanvas" width="500" height="500"></canvas>
-      <div id="interactions">Possible Drug Interactions: </div>
+      <div id="interactions">
+        Possible Drug Interactions: <span id="calculatedInteractions"></span>
+      </div>
     </div>
     <div id="right-section">
       <label for="gender">Gender:</label>
-      <input type="radio" id="male" name="gender" checked> Male&nbsp;&nbsp;
-      <input type="radio" id="female" name="gender"> Female
+      <input type="radio" id="male" name="gender" oninput="updateGraph()" checked> Male&nbsp;&nbsp;
+      <input type="radio" id="female" name="gender" oninput="updateGraph()"> Female
       
       <label for="age">Age:</label>
       <input type="number" id="age" step="1" placeholder="Enter patient's age" oninput="updateGraph()">
@@ -139,24 +154,65 @@ author_profile: false
         <input type="checkbox" id="artherialHypertension"> Artherial Hypertension
         <br>
 
-        <input type="checkbox" id="diabetesMellitus"> Diabetes Mellitus
-        <div class="collapsible-content" id="collapsibleContent">
-          <label for="hba1c">Blood Pressure:</label>
+        <input type="checkbox" id="diabetesMellitus" onclick="toggleCollapsibleDiabetes()"> Diabetes Mellitus
+        <br>
+        <div class="collapsible-content" id="collapsibleContentDiabetes">
+          <div id="left-section-mod">
+          <label for="hba1c"> Blood Pressure:</label>
           <input type="number" id="hba1c" step="0.1" placeholder="Enter patient's HbA1c in %" oninput="updateGraph()">
+          </div>
         </div>
 
-        <input type="checkbox" id="kidneyDisease"> Chronic kidney disease
+        <input type="checkbox" id="kidneyDisease" onclick="toggleCollapsibleKidney()"> Chronic Kidney Disease
         <br>
+        <div class="collapsible-content" id="collapsibleContentKidney">
+          <div id="left-section-mod">
+            <label for="creatinine"> Creatinine:</label>
+            <input type="number" id="creatinine" step="0.1" placeholder="Enter patient's creatinine in mmol/L" oninput="updateGraph()">
+            <div>Creatinine Clearance: <span id="calculatedCreatinineClearance"></span></div>
+          </div>
+        </div>
+        <br>
+        <input type="checkbox" id="medication" onclick="toggleCollapsibleMedication()"> Uses Other Medications
+        <br>
+        <div class="collapsible-content" id="collapsibleContentMedication">
+          <div id="left-section-mod">
+            <div id="input-container">
+              <!-- Initial input field -->
+              <div class="input-container">
+                <label for="value1">Medication 1:</label>
+                <input type="text" id="medValue1" name="medValue1" oninput="updateGraph()">
+              </div>
+            </div>
+            <button onclick="addInputField()">Add Another Value</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
     function updateGraph() {
+      const isMale = document.getElementById('male').checked;
+      const age = document.getElementById('age').value;
       const height = document.getElementById('height').value;
       const weigth = document.getElementById('weigth').value;
       const calculatedBmi = weigth / height / height * 10000;
       document.getElementById('calculatedBmi').innerText = calculatedBmi.toFixed(2);
+      const creatinine = document.getElementById('creatinine').value;
+      const genderCoef = isMale ? 1 : 0.85;
+      const calculatedCreatinineClearance = ((140 - age) * weigth / creatinine / 814.464) * genderCoef;
+      document.getElementById('calculatedCreatinineClearance').innerText = calculatedCreatinineClearance.toFixed(2);
+
+      const med1 = document.getElementById('medValue1').value
+      const atorList = ['Fenofibrate', 'Mavacamten', 'Nefazodone', 'Diltiazem', 'Ciprofibrate', 'Eryhtromycin', 'Clarithromycin', 'Clofibrate', 'Digoxin', 'Verapamil'];
+      if (atorList.includes(med1)) {
+        calculatedInteractions = "(Atorvastatin, " + med1 + ")"
+      }
+      else {
+        calculatedInteractions = "Not present"
+      }
+      document.getElementById('calculatedInteractions').innerText = calculatedInteractions;
 
       const canvas = document.getElementById('graphCanvas');
       const ctx = canvas.getContext('2d');
@@ -259,6 +315,53 @@ author_profile: false
         button.classList.add("active", "expanded");
         button.classList.remove("collapsed");
       }
+    }
+
+    function toggleCollapsibleKidney() {
+      var content = document.getElementById("collapsibleContentKidney");
+      var button = document.querySelector(".kidneyDisease");
+
+      // Toggle the content's visibility
+      if (content.style.display === "block") {
+        content.style.display = "none";
+        button.classList.remove("active", "expanded");
+        button.classList.add("collapsed");
+      } else {
+        content.style.display = "block";
+        button.classList.add("active", "expanded");
+        button.classList.remove("collapsed");
+      }
+    }
+
+    function toggleCollapsibleMedication() {
+      var content = document.getElementById("collapsibleContentMedication");
+      var button = document.querySelector(".medication");
+
+      // Toggle the content's visibility
+      if (content.style.display === "block") {
+        content.style.display = "none";
+        button.classList.remove("active", "expanded");
+        button.classList.add("collapsed");
+      } else {
+        content.style.display = "block";
+        button.classList.add("active", "expanded");
+        button.classList.remove("collapsed");
+      }
+    }
+
+    function addInputField() {
+      // Get the container div
+      var container = document.getElementById('input-container');
+
+      // Create a new input field
+      var medicineCount = container.children.length + 1;
+      var newInput = document.createElement('div');
+      newInput.className = 'input-container';
+      newInput.innerHTML = '<label for="medValue' + medicineCount + '">Medication ' + medicineCount + ':</label>' +
+                           '<input type="text" id="medValue' + medicineCount + '" oninput="updateGraph()">';
+
+      // Append the new input field to the container
+      container.appendChild(newInput);
     }
   </script>
 </body>
