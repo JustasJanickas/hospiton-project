@@ -7,7 +7,7 @@ header:
   overlay_image: /assets/images/mm-home-page-feature.jpg
   actions:
     - label: "<i class='fas fa-download'></i> Install now"
-      url: "/docs/quick-start-guide/"
+      url: "/calculator/"
 excerpt: >
   Pioneers personalized cardiovascular health management 
 feature_row:
@@ -25,7 +25,7 @@ feature_row:
     url: "/about/"
     btn_class: "btn--primary"
     btn_label: "Learn more"
-  - image_path: /assets/images/mm-free-feature.png
+  - image_path: /assets/images/our-team.jpg
     alt: "our team"
     title: "Our Team"
     excerpt: "Our innovative team is dedicated to enhancing healthcare practices! We are a dynamic group of five individuals, each bringing unique expertise from diverse fields, united by a common goal."
